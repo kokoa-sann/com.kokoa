@@ -1,0 +1,223 @@
+    git术语
+        工作区
+        暂存区
+        本地库
+        远程库
+
+    查看git版本
+        git --version
+            git version 2.37.1.windows.1
+
+
+    常用命令
+        配置签名
+            git config --global user.name kokoa
+                // global为全局，kokoa为自定义用户名
+            git config --global user.email l18270780311@163.com
+                // global为全局，l18270780311@163.com为自定义邮箱
+            注：
+                1、查看是否配置成功，查找以下文件打开查看
+                    C:\Users\kokoa\.gitconfig
+                2、首次使用必须配置以上签名，否则会报错
+                    邮箱并不会检查是否真实存在，但是以上两个签名都要配置
+                3、这个签名只是本地的用户名，和以后GitHub上的账号无关
+
+        初始化本地库
+            git init
+                Initialized empty Git repository in D:/springSpace/knowledge/git/src/main/java/com/kokoa/git/.git/
+                // 如果不初始化本地库，git将无法管理你的文件
+
+        查看本地库状态
+            git status
+                On branch master
+                    // 当前分支名字为master
+                No commits yet
+                    // 表示没有东西需要提交
+                nothing added to commit but untracked files present (use "git add" to track)
+                    // 没有添加任何提交，但未跟踪的文件存在(使用“git add”跟踪)
+                    // 这是在当前路径上已经存在文件但没有提交时的提示信息
+
+        将文件添加到暂存区，移除暂存区
+            git add 文件名
+                git add demo.java
+                    // demo.java是文件名，添加暂存区的时候需要带上后缀名
+            git rm --cached 文件名
+                git rm --cached demo.java
+                    // demo.java是文件名，移除暂存区的时候也需要带上后缀名
+            git add demo/demo.java
+                // 会将该目录下的所有文件都添加进暂存区
+            注：
+                1、如何查看是否成功添加进暂存区和成功从暂存区移除
+                    使用git status命令
+                2、每当文件被修改后，需要重新添加到暂存区，否则不能提交
+                    modified:   demo/demo.java
+                        // 修改了demo.java之后，会出现modified的提示，表示文件被修改了
+                        // git是按照行来维护的，所以在修改的时候，如果修改一行，会先删除一行后添加一行
+
+        提交本地库
+            // 将暂存区的文件提交到本地库，形成历史版本，可以进行版本控制了
+            git commit -m "日志信息" 文件名
+                git commit -m "first commit" demo/demo.java
+                    [master (root-commit) f150a34] first commit
+                     1 file changed, 11 insertions(+)
+                     create mode 100644 demo/demo.java
+                    // "first commit"是日志信息
+                    // demo/demo.java是在暂存区中需要提交的文件
+                    // f150a34是版本号
+
+        分支
+            查看分支
+                git branch -v
+                    * master 3081759 commit1
+                        // 表示当前只有一个master分支
+            创建分支
+                git branch 分支名
+                    git branch branch1
+                        // 创建分支后查看分支是否创建成功
+                              branch1 3081759 commit1
+                            * master  3081759 commit1
+                                // *表示当前所在的分支位置是在master分支上
+            切换分支
+                git checkout 分支名
+                    git checkout branch1
+                        // 切换分支后查看分支是否切换成功
+                            * branch1 3081759 commit1
+                              master  3081759 commit1
+            合并分支
+                正常合并，即没有冲突代码
+                    git merge 分支名
+                        git merge demo2
+                            Updating 8ccbcf3..36694ea
+                            Fast-forward
+                             demo2.txt | 3 ++-
+                             1 file changed, 2 insertions(+), 1 deletion(-)
+                            // demo2是分支名
+                            // 合并分支之前需要先切换分支，例如，
+                                如果分支2需要合并到分支1中，则当前分支的位置需要在分支1上，然后git merge 分支2
+                冲突合并，即存在冲突代码
+                    // 合并分支的时候，两个分支在同一个文件的同一个位置有两套完全不同的修改，git替我们决定使用哪一个，必须认为决定新代码内容
+                    直接按正常的合并分支，因为用冲突，所以会在冲突文件上显示冲突内容，修改冲突内容和重新add和commit即可
+                        Auto-merging demo2.txt
+                        CONFLICT (content): Merge conflict in demo2.txt
+                        Automatic merge failed; fix conflicts and then commit the result.
+                            // 会告诉我们自动合并失败，并在冲突文件中生成两个分支中冲突的代码
+                                <<<<<<< HEAD
+                                现在在master分支上，准备书写冲突代码
+                                =======
+                                现在在demo2分支上，书写和master不同的冲突代码
+                                >>>>>>> demo2
+                    在冲突代码解决了之后，commit的时候不可带文件名，如果带了文件名会报错
+                            $ git commit -m "已解决master和demo2上的冲突代码" demo2.txt
+                            fatal: cannot do a partial commit during a merge.
+                        不带文件名才不会报错，然后提交后就正常生成版本
+                            $ git commit -m "已解决master和demo2上的冲突代码"
+                            [master 5f12026] 已解决master和demo2上的冲突代码
+                    注：
+                        在合并的时候，分支后面带上MERGING，表示当前在合并状态
+                            (master|MERGING)
+            当前分支所在的位置：
+                是由heads这个指针决定的，即分支前面的那个*号
+
+        远程库
+            创建远程库
+                GitHub中创建远程库
+                    1、刚开始起好远程库名字创建远程库后可以获得该远程库的HTTPS链接
+                        https://github.com/kokoa-sann/com.kokoa.git.demo.git
+                    2、由于每次使用该远程库都要该链接，所以可以创建别名
+                        查看远程库所有别名
+                            git remote -v
+                        创建别名（别名不能重复）
+                            git remote add 别名 链接
+                                git remote add git-demo https://github.com/kokoa-sann/com.kokoa.git.demo.git
+                                    查看是否创建成功
+                                        git-demo        https://github.com/kokoa-sann/com.kokoa.git.demo.git (fetch)
+                                        git-demo        https://github.com/kokoa-sann/com.kokoa.git.demo.git (push)
+                                            // fetch表示允许使用该别名clone克隆和pull拉取
+                                            // push表示允许使用该别名push推送
+                    3、push推送
+                        // push的最小单位是分支，所以push的时候需要指定推送哪个分支
+                        git push 别名/链接 分支
+                            git push https://github.com/kokoa-sann/com.kokoa.git.demo.git demo2
+                            git push git-demo demo2
+                                fatal: unable to access 'https://github.com/kokoa-sann/com.kokoa.git.demo.git/':
+                                SSL certificate problem: unable to get local issuer certificate
+                                    // 无法访问...链接，SSL证书问题：无法获取本地颁发者证书
+                        注：
+                            push推送失败
+                                // 推送失败，这个是由于Git默认开启了SSL验证，关闭即可；
+                                    git config --global http.sslVerify false
+                                    然后重新推送会让我们登录GitHub账号，登录往后就可以推送成功
+                            当push成功后可以在电脑搜索凭据管理器，查看Windows凭据，
+                            可以找到git:https://github.com的凭据，那么以后再push和pull时就不用登录了
+                    4、pull拉取
+                        // 和push的操作差不多，最小单位也是分支
+                            git push 别名/链接 分支
+                                git pull git-demo demo2
+                                    // 拉取后可以查看本地库的状态，可以发现是干净的，说明拉取会自动提交本地库
+                                        On branch demo2
+                                        nothing to commit, working tree clean
+                    5、克隆clone
+                        git clone 链接
+                            git clone https://github.com/kokoa-sann/com.kokoa.git.demo.git
+                            // 克隆是不需要登录的，因为之前设置的那个链接中的库是public公开的
+                        克隆的时候会做的事
+                            1、拉取代码
+                            2、初始化本地库
+                            3、创建别名，别名默认为origin（原点，起源）
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        其他命令
+            版本日志类命令
+                查看项目版本号
+                    git reflog
+                        f150a34 (HEAD -> master) HEAD@{0}: commit (initial): first commit
+                            // HEAD -> master表示当前版本位置在f150a34版本中
+                            // 例如，如果有多次提交，会显示当前在哪一个版本
+                                388ab9f (HEAD -> master) HEAD@{0}: commit: commit2
+                                3081759 HEAD@{1}: commit (initial): commit1
+
+                版本穿梭
+                    git reset --hard 版本号
+                        git reset --hard f150a34
+                            // 版本更换后git reflog查看版本信息
+                                3081759 (HEAD -> master) HEAD@{0}: reset: moving to 3081759
+                                    // 表示当前版本位置
+                                388ab9f HEAD@{1}: commit: commit2
+                                3081759 (HEAD -> master) HEAD@{2}: commit (initial): commit1
+                                    // 显示出所有版本，并且HEAD -> master表示当前版本位置
+
+
+
+                查看日志
+                    git log
+                        commit f150a340b03a3e6097cec4a22156ba07d794ca48 (HEAD -> master)
+                        Author: kokoa <l18270780311@163.com>
+                        Date:   Fri Sep 2 15:49:41 2022 +0800
+                            first commit
+                        // f150a340b03a3e6097cec4a22156ba07d794ca48是完整版的版本，git reflog只显示前七位版本号
+                        // 查看日志可以看完完整的操作记录
+                            Author表示是哪一个人提交的
+                            Date表示提交的时间
+
+        .git文件夹查看
+                HEAD记录了当前版本的分支在哪个位置，而具体分支在heads文件夹中，找到对应分支，对应分支记录了当前版本的版本号
+                    假设分支是在master中
+                    refs/heads/master文件中记录了当前的版本号
+                refs/heads的heads文件夹记录了所有的分支
+
+
+
+
+
