@@ -142,6 +142,10 @@
                                 fatal: unable to access 'https://github.com/kokoa-sann/com.kokoa.git.demo.git/':
                                 SSL certificate problem: unable to get local issuer certificate
                                     // 无法访问...链接，SSL证书问题：无法获取本地颁发者证书
+                        git push -u 别名/链接 分支
+                            如果使用的是push -u的方式推送的，那么下次推送如果还是推送该链接以及该别名，
+                            则可以直接使用git push
+                            而不用完整输入git push 别名/链接 分支
                         注：
                             push推送失败
                                 // 推送失败，这个是由于Git默认开启了SSL验证，关闭即可；
@@ -167,7 +171,7 @@
                     6、更改远程库别名
                         git remote set-url 别名 链接
                         git remote set-url git-knowledge https://github.com/kokoa-sann/com.kokoa.gitKnowle.git
-                        
+
 
 
 
