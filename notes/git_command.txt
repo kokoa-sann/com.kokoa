@@ -164,6 +164,10 @@
                             1、拉取代码
                             2、初始化本地库
                             3、创建别名，别名默认为origin（原点，起源）
+                    6、更改远程库别名
+                        git remote set-url 别名 链接
+                        git remote set-url git-knowledge https://github.com/kokoa-sann/com.kokoa.gitKnowle
+
 
 
 
